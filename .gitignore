@@ -1,0 +1,48 @@
+# ─── Node / React Native ─────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+
+# ─── Expo ────────────────────────────────────────────────────────────────────
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+google-services.json
+GoogleService-Info.plist
+
+# ─── Secrets / credentials (NEVER commit) ────────────────────────────────────
+secrets.h
+.env
+.env.local
+.env.*.local
+**/secrets.h
+
+# ─── PlatformIO build artefacts ──────────────────────────────────────────────
+.pio/
+.pioenvs/
+.piolibdeps/
+cmake-build-*/
+*.o
+*.a
+*.bin
+*.elf
+*.map
+
+# ─── OS noise ────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+*.suo
+*.user
