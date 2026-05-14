@@ -90,6 +90,19 @@ static void drawEye(EyeType type, int cx, int cy) {
             display.drawFastHLine(cx-5, cy,   3, FG);
             display.drawFastHLine(cx+3, cy,   3, FG);
             break;
+
+        case EYE_ARC: {
+            // ∩ upward arc — the classic ^^ happy emoji eye
+            // Spans EW pixels wide, peaks 4px above centre at the middle
+            int r = EW / 2;
+            for (int dx = -r; dx <= r; dx++) {
+                float t    = (float)dx / r;
+                int   arcY = cy - (int)(4.0f * (1.0f - t * t));
+                display.drawPixel(cx + dx, arcY,     FG);
+                display.drawPixel(cx + dx, arcY + 1, FG);
+            }
+            break;
+        }
     }
 }
 
@@ -99,11 +112,19 @@ void drawEyes(EyeType left, EyeType right) {
 }
 
 void drawBrows() {
-    // Angled brows slanting toward center — drawn in FG above eyes
-    display.drawLine(LE_X-6, EY-EH/2-5, LE_X+6, EY-EH/2-1, FG);
-    display.drawLine(LE_X-6, EY-EH/2-4, LE_X+6, EY-EH/2,   FG);
-    display.drawLine(RE_X-6, EY-EH/2-1, RE_X+6, EY-EH/2-5, FG);
-    display.drawLine(RE_X-6, EY-EH/2,   RE_X+6, EY-EH/2-4, FG);
+    if (getCurrentExpression() == FACE_SAD) {
+        // Sad brows: outer low, inner high — \/ worried look
+        display.drawLine(LE_X-6, EY-EH/2-1, LE_X+6, EY-EH/2-5, FG);
+        display.drawLine(LE_X-6, EY-EH/2,   LE_X+6, EY-EH/2-4, FG);
+        display.drawLine(RE_X-6, EY-EH/2-5, RE_X+6, EY-EH/2-1, FG);
+        display.drawLine(RE_X-6, EY-EH/2-4, RE_X+6, EY-EH/2,   FG);
+    } else {
+        // Angry brows: outer high, inner low — /\ threatening V shape
+        display.drawLine(LE_X-6, EY-EH/2-5, LE_X+6, EY-EH/2-1, FG);
+        display.drawLine(LE_X-6, EY-EH/2-4, LE_X+6, EY-EH/2,   FG);
+        display.drawLine(RE_X-6, EY-EH/2-1, RE_X+6, EY-EH/2-5, FG);
+        display.drawLine(RE_X-6, EY-EH/2,   RE_X+6, EY-EH/2-4, FG);
+    }
 }
 
 void drawCheeks() {

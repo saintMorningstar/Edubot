@@ -26,9 +26,9 @@ void processBLECommand(String cmd) {
     else if (cmd == "STOP")          { stopAllMotion(); setState(IDLE); }
 
     // ── Dance ─────────────────────────────────────────────────────────────────
-    else if (cmd == "DANCE")      { danceRoutine1(); setState(DANCING); }
-    else if (cmd == "DANCE_2")    { danceRoutine2(); setState(DANCING); }
-    else if (cmd == "STOP_DANCE") { stopDancing();   setState(IDLE); }
+    else if (cmd == "DANCE")      { danceRoutine1(); setState(DANCING); showExpression(FACE_DANCING); }
+    else if (cmd == "DANCE_2")    { danceRoutine2(); setState(DANCING); showExpression(FACE_DANCING); }
+    else if (cmd == "STOP_DANCE") { stopDancing();   setState(IDLE);    showExpression(FACE_HAPPY);   }
 
     // ── Emotions / Faces ──────────────────────────────────────────────────────
     else if (cmd == "HAPPY")    { setEmotion(EMOTION_HAPPY);    showExpression(FACE_HAPPY); }

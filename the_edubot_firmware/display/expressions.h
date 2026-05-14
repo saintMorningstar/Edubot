@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-// ── Face identifiers (backward-compatible enum) ───────────────────────────────
+// ── Face identifiers ──────────────────────────────────────────────────────────
 enum Expressions {
     FACE_HAPPY,
     FACE_SAD,
@@ -11,14 +11,16 @@ enum Expressions {
     FACE_SLEEPY,
     FACE_THINKING,
     FACE_BLINK,
-    FACE_EXCITED
+    FACE_EXCITED,
+    FACE_DANCING    // new: shown when DANCE BLE command received
 };
 
-// ── Eye shapes (mirrors app EyeShape type) ────────────────────────────────────
+// ── Eye shapes ────────────────────────────────────────────────────────────────
 enum EyeType {
     EYE_OPEN, EYE_CLOSED, EYE_WIDE, EYE_DOT,
     EYE_HALF, EYE_SQUINT, EYE_WINK, EYE_X,
-    EYE_SPIRAL, EYE_HEART, EYE_STAR
+    EYE_SPIRAL, EYE_HEART, EYE_STAR,
+    EYE_ARC     // new: upward ∩ arc — happy ^^ style
 };
 
 // ── Mouth shapes (mirrors app MouthShape type) ────────────────────────────────
