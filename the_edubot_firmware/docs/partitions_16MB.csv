@@ -1,0 +1,19 @@
+# ESP32-S3 N16R8 custom partition table — 16 MB flash
+# Adds a 4 MB "model" partition for ESP-SR WakeNet + MultiNet models.
+#
+# HOW TO USE IN ARDUINO IDE:
+#   1. Copy this file next to your .ino sketch (same folder)
+#      and rename it  partitions.csv
+#   2. In Arduino IDE: Tools > Partition Scheme > Custom
+#      (if "Custom" doesn't appear, the board package needs updating to v3.x)
+#   3. Flash the ESP-SR model binary to the model partition:
+#      Tools > ESP32 Sketch Data Upload  -or-  esptool.py write_flash 0x410000 model.bin
+#      The model binary is in your arduino-esp32 install under:
+#      packages/esp32/hardware/esp32/<version>/tools/esp_sr/
+#
+# Name,    Type, SubType,  Offset,    Size
+nvs,       data, nvs,      0x9000,    0x5000,
+otadata,   data, ota,      0xe000,    0x2000,
+app0,      app,  ota_0,    0x10000,   0x300000,
+spiffs,    data, spiffs,   0x310000,  0x100000,
+model,     data, spiffs,   0x410000,  0x400000,
