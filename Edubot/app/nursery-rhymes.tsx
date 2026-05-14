@@ -114,17 +114,29 @@ const RHYMES: RhymeCard[] = [
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function NurseryRhymesScreen() {
-  const { isConnected, isPlayingRhyme, activeRhyme, playRhyme } = useRobot();
-  const [pendingId, setPendingId] = React.useState<string | null>(null);
+  const { isConnected, isPlayingRhyme, activeRhyme, playRhyme, stopRhyme } = useRobot();
+  const [pendingId,   setPendingId]   = React.useState<string | null>(null);
+  const [secondsLeft, setSecondsLeft] = React.useState(0);
+
+  // Countdown: ticks from 60 → 0 whenever a rhyme is playing
+  React.useEffect(() => {
+    if (!isPlayingRhyme) { setSecondsLeft(0); return; }
+    setSecondsLeft(60);
+    const iv = setInterval(() => {
+      setSecondsLeft(prev => (prev <= 1 ? (clearInterval(iv), 0) : prev - 1));
+    }, 1000);
+    return () => clearInterval(iv);
+  }, [isPlayingRhyme]);
 
   const handleTap = (rhyme: RhymeCard) => {
-    if (!isConnected) {
-      setPendingId('__offline__');
-      return;
-    }
-    if (isPlayingRhyme) return;
+    if (!isConnected) { setPendingId('__offline__'); return; }
+    if (activeRhyme === rhyme.id) { stopRhyme(); return; }
     playRhyme(rhyme.id);
   };
+
+  const activeColor = RHYMES.find(r => r.id === activeRhyme)?.color ?? S.colors.primary;
+  const mm = String(Math.floor(secondsLeft / 60));
+  const ss = String(secondsLeft % 60).padStart(2, '0');
 
   return (
     <View style={styles.bg}>
@@ -142,18 +154,47 @@ export default function NurseryRhymesScreen() {
           <View style={{ flex: 1 }}>
             <Text style={styles.headerTitle}>Nursery Rhymes</Text>
             <Text style={styles.headerSub}>
-              {isPlayingRhyme
-                ? `Playing: ${RHYMES.find(r => r.id === activeRhyme)?.title ?? '...'}`
-                : 'Tap a rhyme for the robot to sing!'}
+              {isPlayingRhyme ? 'Tap the card again to stop' : 'Tap a rhyme for the robot to sing!'}
             </Text>
           </View>
         </View>
 
+        {/* ── Now Playing banner ── */}
+        {isPlayingRhyme && (
+          <View style={[styles.nowPlaying, { borderColor: activeColor }]}>
+            <View style={styles.npLeft}>
+              <Ionicons name="musical-notes" size={18} color={activeColor} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.npLabel}>Now playing on robot</Text>
+                <Text style={[styles.npTitle, { color: activeColor }]} numberOfLines={1}>
+                  {RHYMES.find(r => r.id === activeRhyme)?.title}
+                </Text>
+                <View style={styles.progressTrack}>
+                  <View style={[styles.progressFill, {
+                    width: `${(secondsLeft / 60) * 100}%` as any,
+                    backgroundColor: activeColor,
+                  }]} />
+                </View>
+              </View>
+            </View>
+            <View style={styles.npRight}>
+              <Text style={[styles.countdown, { color: activeColor }]}>{mm}:{ss}</Text>
+              <TouchableOpacity
+                style={[styles.stopBtn, { backgroundColor: activeColor }]}
+                onPress={stopRhyme}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="stop" size={18} color="#fff" />
+                <Text style={styles.stopBtnText}>Stop</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         {/* ── Rhyme grid ── */}
         <View style={styles.grid}>
           {RHYMES.map(rhyme => {
-            const isActive   = activeRhyme === rhyme.id;
-            const isDisabled = isPlayingRhyme && !isActive;
+            const isActive = activeRhyme === rhyme.id;
             const Icon = rhyme.iconFam === 'MaterialCommunityIcons'
               ? MaterialCommunityIcons
               : Ionicons;
@@ -164,18 +205,16 @@ export default function NurseryRhymesScreen() {
                 style={[
                   styles.card,
                   { borderColor: rhyme.color },
-                  isActive   && { backgroundColor: rhyme.color },
-                  isDisabled && styles.cardDisabled,
+                  isActive && { backgroundColor: rhyme.color },
                 ]}
                 onPress={() => handleTap(rhyme)}
-                disabled={isDisabled}
                 activeOpacity={0.78}
               >
                 {/* Playing indicator */}
                 {isActive && (
                   <View style={styles.playingBadge}>
                     <Ionicons name="musical-notes" size={12} color="#fff" />
-                    <Text style={styles.playingBadgeText}>Playing</Text>
+                    <Text style={styles.playingBadgeText}>Tap to stop</Text>
                   </View>
                 )}
 
@@ -200,7 +239,7 @@ export default function NurseryRhymesScreen() {
                   {rhyme.lines}
                 </Text>
 
-                {!isActive && !isDisabled && (
+                {!isActive && (
                   <View style={[styles.playBtn, { backgroundColor: rhyme.color }]}>
                     <Ionicons name="play" size={14} color="#fff" />
                   </View>
@@ -280,9 +319,6 @@ const styles = StyleSheet.create({
     gap:             S.spacing.xs,
     ...S.shadow.sm,
   },
-  cardDisabled: {
-    opacity: 0.38,
-  },
   iconCircle: {
     width:          64,
     height:         64,
@@ -331,6 +367,69 @@ const styles = StyleSheet.create({
   },
   playingBadgeText: {
     fontSize:   9,
+    fontWeight: '800',
+    color:      '#fff',
+  },
+
+  // Now Playing banner
+  nowPlaying: {
+    flexDirection:    'row',
+    alignItems:       'center',
+    backgroundColor:  S.colors.card,
+    borderRadius:     S.radius.lg,
+    borderWidth:      2,
+    padding:          S.spacing.md,
+    marginBottom:     S.spacing.lg,
+    gap:              S.spacing.md,
+    ...S.shadow.md,
+  },
+  npLeft: {
+    flex:          1,
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           S.spacing.sm,
+  },
+  npLabel: {
+    fontSize:  10,
+    color:     S.colors.textMuted,
+    fontWeight:'600',
+  },
+  npTitle: {
+    fontSize:   S.fontSize.sm,
+    fontWeight: '800',
+    marginTop:  1,
+  },
+  progressTrack: {
+    height:          4,
+    backgroundColor: S.colors.border,
+    borderRadius:    2,
+    marginTop:       6,
+    overflow:        'hidden',
+  },
+  progressFill: {
+    height:       4,
+    borderRadius: 2,
+  },
+  npRight: {
+    alignItems: 'center',
+    gap:        S.spacing.xs,
+  },
+  countdown: {
+    fontSize:   S.fontSize.lg,
+    fontWeight: '800',
+    minWidth:   42,
+    textAlign:  'center',
+  },
+  stopBtn: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               4,
+    paddingHorizontal: S.spacing.sm,
+    paddingVertical:   6,
+    borderRadius:      S.radius.full,
+  },
+  stopBtnText: {
+    fontSize:   11,
     fontWeight: '800',
     color:      '#fff',
   },

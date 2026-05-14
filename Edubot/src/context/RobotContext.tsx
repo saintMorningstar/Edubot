@@ -56,6 +56,7 @@ interface RobotContextValue {
   isPlayingRhyme: boolean;
   activeRhyme:    string | null;
   playRhyme:      (id: string) => void;
+  stopRhyme:      () => void;
 
   // Legacy aliases (keep screens from breaking)
   sendLed:      (state: string) => void;
@@ -122,14 +123,35 @@ export function RobotProvider({ children }: { children: React.ReactNode }) {
   const scan       = useCallback(() => { bleService.scan(); }, []);
   const disconnect = useCallback(() => { bleService.disconnect(); }, []);
 
-  const [activeRhyme,   setActiveRhyme]   = useState<string | null>(null);
-  const rhymeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const playRhyme = useCallback((id: string) => {
-    bleService.sendSound(RHYME_SOUNDS[id] ?? 4);
-    setActiveRhyme(id);
-    if (rhymeTimerRef.current) clearTimeout(rhymeTimerRef.current);
-    rhymeTimerRef.current = setTimeout(() => setActiveRhyme(null), 5000);
+  const [activeRhyme,    setActiveRhyme]    = useState<string | null>(null);
+  const rhymeTimerRef    = useRef<ReturnType<typeof setTimeout>  | null>(null);
+  const rhymeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const _clearRhymeTimers = useCallback(() => {
+    if (rhymeTimerRef.current)    { clearTimeout(rhymeTimerRef.current);   rhymeTimerRef.current = null; }
+    if (rhymeIntervalRef.current) { clearInterval(rhymeIntervalRef.current); rhymeIntervalRef.current = null; }
   }, []);
+
+  const stopRhyme = useCallback(() => {
+    _clearRhymeTimers();
+    bleService.sendStopSound();
+    setActiveRhyme(null);
+  }, [_clearRhymeTimers]);
+
+  const playRhyme = useCallback((id: string) => {
+    _clearRhymeTimers();
+    const trackNum = RHYME_SOUNDS[id] ?? 1;
+    bleService.sendSound(trackNum);
+    setActiveRhyme(id);
+    // Resend every 25 s so short tracks loop within the 60 s window
+    rhymeIntervalRef.current = setInterval(() => bleService.sendSound(trackNum), 25000);
+    // Auto-stop after 60 s
+    rhymeTimerRef.current = setTimeout(() => {
+      if (rhymeIntervalRef.current) { clearInterval(rhymeIntervalRef.current); rhymeIntervalRef.current = null; }
+      bleService.sendStopSound();
+      setActiveRhyme(null);
+    }, 60000);
+  }, [_clearRhymeTimers]);
 
   const value: RobotContextValue = {
     connectionState,
@@ -162,6 +184,7 @@ export function RobotProvider({ children }: { children: React.ReactNode }) {
     isPlayingRhyme: activeRhyme !== null,
     activeRhyme,
     playRhyme,
+    stopRhyme,
 
     // Legacy aliases
     sendLed:      (_state: string) => {},
