@@ -63,7 +63,14 @@
       ],
       "expo-audio",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow Edubot to use your microphone for voice commands.",
+          "speechRecognitionPermission": "Allow Edubot to use speech recognition for voice commands."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
