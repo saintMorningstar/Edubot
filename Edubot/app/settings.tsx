@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
   },
 
   // Tips
-  tipsCard: { backgroundColor: S.colors.primary + '10' },
+  tipsCard: { backgroundColor: S.colors.primary + '10', shadowOpacity: 0, elevation: 0 },
   tipsRow:  { flexDirection: 'row', alignItems: 'center', gap: S.spacing.xs, marginBottom: S.spacing.sm },
   tipsTitle: { fontSize: S.fontSize.md, fontWeight: '700', color: S.colors.primary },
   tipsBody: {

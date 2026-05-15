@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useRobot } from '../src/context/RobotContext';
 import { THEME } from '../src/utils/theme';
 import AnimatedBackground from '../src/components/ui/AnimatedBackground';
@@ -131,17 +132,19 @@ export default function ServoControlScreen() {
             />
             <KidButton
               label="Dance"
+              variant="accent"
               onPress={sendDance}
               icon={<Ionicons name="musical-notes" size={20} color="#fff" />}
-              style={[styles.actionBtn, { backgroundColor: S.colors.secondary }]}
+              style={styles.actionBtn}
             />
           </View>
           <KidButton
             label="Return to Home"
-            onPress={() => applyPreset('Home')}
-            icon={<Ionicons name="home" size={20} color="#fff" />}
+            variant="ghost"
+            onPress={() => router.push('/')}
+            icon={<Ionicons name="home" size={20} color={S.colors.primary} />}
             fullWidth
-            style={{ marginTop: S.spacing.sm, backgroundColor: S.colors.textMuted }}
+            style={{ marginTop: S.spacing.sm }}
           />
         </View>
       </ScrollView>

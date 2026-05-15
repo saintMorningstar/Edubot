@@ -313,12 +313,18 @@ export default function DashboardScreen() {
           />
         </View>
 
-        {/* ── Disconnect ── */}
+        {/* ── Connect / Disconnect ── */}
         <KidButton
-          label="Disconnect"
-          variant="ghost"
-          onPress={handleDisconnect}
-          icon={<Ionicons name="power" size={20} color={S.colors.primary} />}
+          label={isConnected ? 'Disconnect' : 'Connect to Robot'}
+          variant={isConnected ? 'danger' : 'primary'}
+          onPress={isConnected ? handleDisconnect : () => router.push('/')}
+          icon={
+            <Ionicons
+              name={isConnected ? 'power' : 'bluetooth'}
+              size={20}
+              color="#fff"
+            />
+          }
           style={{ marginTop: S.spacing.sm, marginBottom: S.spacing.xxl }}
           fullWidth
         />
