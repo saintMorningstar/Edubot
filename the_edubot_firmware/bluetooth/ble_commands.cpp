@@ -52,6 +52,18 @@ void processBLECommand(String cmd) {
     else if (cmd == "PLAY_SOUND_5") { playSound(SOUND_EXCITED); }
     else if (cmd == "STOP_SOUND")   { stopAudio(); }
 
+    // ── Nursery rhymes (files 0021.mp3 … 0030.mp3 on SD card) ───────────────
+    else if (cmd == "PLAY_RHYME_1")  { playSound(SOUND_RHYME_1);  }
+    else if (cmd == "PLAY_RHYME_2")  { playSound(SOUND_RHYME_2);  }
+    else if (cmd == "PLAY_RHYME_3")  { playSound(SOUND_RHYME_3);  }
+    else if (cmd == "PLAY_RHYME_4")  { playSound(SOUND_RHYME_4);  }
+    else if (cmd == "PLAY_RHYME_5")  { playSound(SOUND_RHYME_5);  }
+    else if (cmd == "PLAY_RHYME_6")  { playSound(SOUND_RHYME_6);  }
+    else if (cmd == "PLAY_RHYME_7")  { playSound(SOUND_RHYME_7);  }
+    else if (cmd == "PLAY_RHYME_8")  { playSound(SOUND_RHYME_8);  }
+    else if (cmd == "PLAY_RHYME_9")  { playSound(SOUND_RHYME_9);  }
+    else if (cmd == "PLAY_RHYME_10") { playSound(SOUND_RHYME_10); }
+
     // ── Volume ────────────────────────────────────────────────────────────────
     else if (cmd.startsWith("VOL:")) {
         int vol = cmd.substring(4).toInt();

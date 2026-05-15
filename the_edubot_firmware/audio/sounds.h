@@ -25,7 +25,19 @@ enum SoundTrack : uint16_t {
     SOUND_SONG_2        = 17,
     SOUND_SONG_3        = 18,
     SOUND_EFFECT_1      = 19,
-    SOUND_EFFECT_2      = 20
+    SOUND_EFFECT_2      = 20,
+
+    // Nursery rhyme tracks — files 0021.mp3 … 0030.mp3 on SD card
+    SOUND_RHYME_1       = 21,   // Twinkle Little Star
+    SOUND_RHYME_2       = 22,   // Humpty Dumpty
+    SOUND_RHYME_3       = 23,   // Baa Baa Black Sheep
+    SOUND_RHYME_4       = 24,   // Jack and Jill
+    SOUND_RHYME_5       = 25,   // Old MacDonald
+    SOUND_RHYME_6       = 26,   // Itsy Bitsy Spider
+    SOUND_RHYME_7       = 27,   // Row Your Boat
+    SOUND_RHYME_8       = 28,   // Wheels on the Bus
+    SOUND_RHYME_9       = 29,   // Mary's Little Lamb
+    SOUND_RHYME_10      = 30    // Head Shoulders Knees
 };
 
 void playSound(uint16_t track);

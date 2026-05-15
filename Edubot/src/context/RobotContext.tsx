@@ -77,11 +77,18 @@ const DEFAULT_TELEMETRY: TelemetryData = {
   humidity:       0,
 };
 
-// Firmware only exposes PLAY_SOUND_1..5 via BLE; map rhyme IDs to those tracks
-const RHYME_SOUNDS: Record<string, number> = {
-  twinkle: 4, humpty: 5, baa_baa: 1, jack_jill: 2,
-  old_mcdonald: 3, itsy_bitsy: 4, row_your_boat: 5,
-  wheels_bus: 1, mary_lamb: 2, heads_shoulders: 3,
+// Each rhyme maps to a dedicated PLAY_RHYME_N command (SD card tracks 21-30)
+const RHYME_TRACK: Record<string, number> = {
+  twinkle:       1,
+  humpty:        2,
+  baa_baa:       3,
+  jack_jill:     4,
+  old_mcdonald:  5,
+  itsy_bitsy:    6,
+  row_your_boat: 7,
+  wheels_bus:    8,
+  mary_lamb:     9,
+  heads_shoulders: 10,
 };
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
@@ -140,11 +147,12 @@ export function RobotProvider({ children }: { children: React.ReactNode }) {
 
   const playRhyme = useCallback((id: string) => {
     _clearRhymeTimers();
-    const trackNum = RHYME_SOUNDS[id] ?? 1;
-    bleService.sendSound(trackNum);
+    const trackNum = RHYME_TRACK[id] ?? 1;
+    const cmd = `PLAY_RHYME_${trackNum}`;
+    bleService.sendCommand(cmd);
     setActiveRhyme(id);
-    // Resend every 25 s so short tracks loop within the 60 s window
-    rhymeIntervalRef.current = setInterval(() => bleService.sendSound(trackNum), 25000);
+    // Resend every 25 s so the track loops within the 60 s window
+    rhymeIntervalRef.current = setInterval(() => bleService.sendCommand(cmd), 25000);
     // Auto-stop after 60 s
     rhymeTimerRef.current = setTimeout(() => {
       if (rhymeIntervalRef.current) { clearInterval(rhymeIntervalRef.current); rhymeIntervalRef.current = null; }
