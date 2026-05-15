@@ -120,9 +120,8 @@ export function RobotProvider({ children }: { children: React.ReactNode }) {
         if (parsed.state) {
           setRobotStatus({ state: parsed.state as RobotStatus['state'] });
         }
-        // {"event":"CONNECTED"} — no state change needed
       } catch {
-        console.log('[BLE Status]', msg);
+        // Non-JSON status message — ignore
       }
     });
   }, [addEntry]);

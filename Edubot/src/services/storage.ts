@@ -1,5 +1,3 @@
-
-
 import * as SQLite from 'expo-sqlite';
 
 
@@ -18,7 +16,6 @@ function getDB(): SQLite.SQLiteDatabase {
   return _db;
 }
 
-
 function kvGet(key: string): string | null {
   try {
     const row = getDB().getFirstSync<{ value: string }>(
@@ -32,7 +29,6 @@ function kvGet(key: string): string | null {
   }
 }
 
-
 function kvSet(key: string, value: string): void {
   try {
     getDB().runSync(
@@ -45,15 +41,11 @@ function kvSet(key: string, value: string): void {
   }
 }
 
-
-
 const KEYS = {
   ROBOT_IP: '@edubot:robot_ip',
   PROGRESS: '@edubot:progress',
   AMBIENT:  '@edubot:ambient',
 } as const;
-
-
 
 export interface ActivityRecord {
   completed: number;

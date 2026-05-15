@@ -44,8 +44,6 @@ export class WebSocketService {
         this._setState('connecting');
 
         const url = `ws://${robotIp}:${WS_PORT}${WS_PATH}`;
-        console.log(`[WS] Connecting to ${url}`);
-
         this.ws = new WebSocket(url);
         this.ws.binaryType = 'arraybuffer';
 
@@ -129,7 +127,6 @@ export class WebSocketService {
 
         // 3. End marker
         this._sendJson({ type: 'RESPONSE_AUDIO_END' });
-        console.log(`[WS] Sent ${mp3Buffer.byteLength} bytes MP3 to ESP32`);
     }
 
     // ─── Receive handlers ─────────────────────────────────────────────────────
@@ -148,7 +145,6 @@ export class WebSocketService {
             this.rxChunks    = [];
             this.rxReceived  = 0;
             this.rxPending   = this.rxExpected > 0;
-            console.log(`[WS] Incoming ${this.rxFormat} audio: ${this.rxExpected} bytes`);
 
         } else if (type === 'PING') {
             this._sendJson({ type: 'PONG' });
@@ -178,7 +174,6 @@ export class WebSocketService {
             }
             this.rxPending = false;
             this.rxChunks  = [];
-            console.log(`[WS] Received ${this.rxReceived} bytes ${this.rxFormat} audio`);
             this.onAudio?.(full.buffer);
         }
     }
@@ -201,7 +196,6 @@ export class WebSocketService {
     private _setState(s: WsState): void {
         if (this._state === s) return;
         this._state = s;
-        console.log(`[WS] State → ${s}`);
         this.onStateChange?.(s);
     }
 }

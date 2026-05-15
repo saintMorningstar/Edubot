@@ -28,20 +28,16 @@ module.exports = async function processAudio(req, res) {
         });
     }
 
-    console.log(`[Pipeline] Received ${wavBuffer.length} byte WAV`);
-
     // ── Step 1: Speech-to-text ────────────────────────────────
     let transcript;
     try {
         transcript = await transcribeAudio(wavBuffer);
-        console.log(`[Pipeline] Transcript: "${transcript}"`);
     } catch (err) {
         console.error('[Pipeline] AssemblyAI error:', err.message);
         return sendFallbackAudio(res, FALLBACK_TEXT);
     }
 
     if (!transcript || transcript.trim() === '') {
-        console.log('[Pipeline] No speech detected — sending prompt');
         return sendFallbackAudio(res, "I didn't quite hear you! Can you say that again?");
     }
 
@@ -49,7 +45,6 @@ module.exports = async function processAudio(req, res) {
     let aiText;
     try {
         aiText = await generateResponse(transcript.trim());
-        console.log(`[Pipeline] Gemini: "${aiText}"`);
     } catch (err) {
         console.error('[Pipeline] Gemini error:', err.message);
         return sendFallbackAudio(res, FALLBACK_TEXT);
@@ -64,7 +59,6 @@ async function sendTtsAudio(res, text) {
     try {
         const pcmBuf = await elevenLabsSynth(text);
         const wavBuf = wrapPcmInWav(pcmBuf, 16000, 1, 16);
-        console.log(`[Pipeline] ElevenLabs OK → ${wavBuf.length} bytes WAV`);
         return res
             .status(200)
             .type('audio/wav')
@@ -77,7 +71,6 @@ async function sendTtsAudio(res, text) {
     // Fallback: Google Cloud TTS → returns WAV directly
     try {
         const wavBuf = await googleTtsSynth(text);
-        console.log(`[Pipeline] Google TTS OK → ${wavBuf.length} bytes WAV`);
         return res
             .status(200)
             .type('audio/wav')
